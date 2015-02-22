@@ -1,5 +1,7 @@
 #!/usr/bin/python3.4
 import re
+import os
+import sys
 from itertools import takewhile
 
 def maxProfit(dollars, day, hold, max_day, input):
@@ -66,8 +68,18 @@ def extract_data(filename):
     return data
 
 if __name__ == "__main__":
-    extracted_data = extract_data("input.txt")
+    filename = sys.argv[1]
+    extracted_data = extract_data(filename)
     for k, v in extracted_data.items():
         memoization = {}
         print("Case {}: {}".format(k, maxProfit(k[1], 0, -1, k[2], v)))
+
+    """
+    Output:
+    Case (1, 10, 2): 10
+    Case (1, 12, 30): 12
+    Case (2, 10, 11): 39
+    Case (0, 11, 30): 11
+    Case (6, 10, 20): 44
+    """
 
