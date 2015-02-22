@@ -64,11 +64,15 @@ def extract_data(filename):
             for x in range(1, val[2] + 1):
                 if x in data_dict: data[val].append(data_dict[x])
                 else: data[val].append((x, 0, 0, 0))    
-
+    f.close()
     return data
 
 if __name__ == "__main__":
-    filename = sys.argv[1]
+    try:
+        filename = sys.argv[1]
+    except IndexError:
+        filename = "input.txt"
+    
     extracted_data = extract_data(filename)
     for k, v in extracted_data.items():
         memoization = {}
