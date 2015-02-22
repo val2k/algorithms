@@ -64,12 +64,23 @@ def extract_data(filename):
         for line in f:
             data.append(tuple(int(v) for v in re.findall("[0-9]+" , line)))            
     f.close()
-    return data
+    
+    fst_line = data[0]
+    data = sorted(data[1:-1])
+    data_dict = {d[0]: (d[0], d[1], d[2], d[3]) for d in data }
+    
+    data = []
+    for d in range(1, fst_line[2]+1):
+        if d in data_dict:
+            data.append(data_dict[d])
+        else:
+            data.append((d, 0, 0, 0))
+
+    return fst_line, data
 
 if __name__ == "__main__":
     print(maxProfit(10, 0, -1))
-    input = extract_data("input2.txt")
-    fst_line = input[0]
-    data = sorted(input[1:-1])
+    fst_line, data = extract_data("input2.txt")
+
     print(fst_line)
     print(data)
