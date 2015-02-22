@@ -1,0 +1,9 @@
+How to launch?
+-> ./machines filename
+
+ex:
+valerian@valerian$ ./machines.py input2.txt
+Case (6, 10, 20): 44
+
+
+
