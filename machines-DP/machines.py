@@ -2,8 +2,6 @@
 import re
 from itertools import takewhile
 
-memoization = {}
-
 def maxProfit(dollars, day, hold, max_day, input):
     """ Function using dynamic programming 
     States: selling, buying, selling & buying,skipping (getting profit of the machine), or doing nothing 
@@ -22,7 +20,7 @@ def maxProfit(dollars, day, hold, max_day, input):
         return dollars
     
     # action of buying a machine
-    if dollars >= input[day][1] and hold == -1:
+    if dollars >= input[day][1] and hold == -1 and input[day][1] != 0:
         buy = maxProfit(dollars - input[day][1], day + 1, day, max_day, input)
     
     # action of doing nothing (if holding no machine)
@@ -35,7 +33,7 @@ def maxProfit(dollars, day, hold, max_day, input):
         skip = maxProfit(dollars + input[hold][3], day + 1, hold, max_day, input)
         
         # we can sell&buy only if we have enough money to buy the machine at the current day
-        if dollars + input[hold][2] >= input[day][1]:
+        if dollars + input[hold][2] >= input[day][1] and input[day][1] != 0:
             sell_buy = maxProfit(dollars + input[hold][2] - input[day][1], day + 1, day, max_day, input)
 
     tmp_dollars = max(buy, nothing, sell, skip, sell_buy)
@@ -69,9 +67,7 @@ def extract_data(filename):
 
 if __name__ == "__main__":
     extracted_data = extract_data("input.txt")
-
     for k, v in extracted_data.items():
-        print(maxProfit(k[1], 0, -1, k[2], v))
-    
-
+        memoization = {}
+        print("Case {}: {}".format(k, maxProfit(k[1], 0, -1, k[2], v)))
 
