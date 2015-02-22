@@ -25,9 +25,10 @@ input = [(1, 9, 1, 2),
 memoization = {}
 max_day = len(input)
 
+
 def maxProfit(dollars, day, hold):
     # all actions
-    sell_buy, sell, buy, skip, nothing = 0, 0, 0, 0
+    sell_buy, sell, buy, skip, nothing = 0, 0, 0, 0, 0
     
     # return the value from dictionnary if already calculed 
     if (dollars, day, hold) in memoization:
@@ -42,6 +43,30 @@ def maxProfit(dollars, day, hold):
     if dollars >= input[day][1] and hold == -1:
         buy = maxProfit(dollars - input[day][1], day + 1, day)
     
+    if hold == -1:
+        nothing = maxProfit(dollars, day + 1, hold)
+    
+    elif hold != -1:
+        sell = maxProfit(dollars + input[hold][2], day + 1, -1)
+        skip = maxProfit(dollars + input[hold][3], day + 1, hold)
+        
+        if dollars + input[hold][2] >= input[day][1]:
+            sell_buy = maxProfit(dollars + input[hold][2] - input[day][1], day + 1, day)
 
+    tmp_dollars = max(buy, nothing, sell, skip, sell_buy)
+    memoization[dollars, day, hold] = tmp_dollars
 
-  
+    return tmp_dollars
+
+def open_file(filename):
+    with open(filename, "r") as f:
+        c = 0
+        for line in f:
+            print(line)
+            c += 1
+    print(c, "lines")
+    f.close()
+
+if __name__ == "__main__":
+    print(maxProfit(10, 0, -1))
+    open_file("input2.txt")
