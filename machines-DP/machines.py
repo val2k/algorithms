@@ -1,5 +1,5 @@
 #!/usr/bin/python3.4
-
+import re
 
 input = [(1, 9, 1, 2),
   (2, 10, 9, 1),
@@ -58,15 +58,18 @@ def maxProfit(dollars, day, hold):
 
     return tmp_dollars
 
-def open_file(filename):
+def extract_data(filename):
+    data = []
     with open(filename, "r") as f:
-        c = 0
         for line in f:
-            print(line)
-            c += 1
-    print(c, "lines")
+            data.append(tuple(int(v) for v in re.findall("[0-9]+" , line)))            
     f.close()
+    return data
 
 if __name__ == "__main__":
     print(maxProfit(10, 0, -1))
-    open_file("input2.txt")
+    input = extract_data("input2.txt")
+    fst_line = input[0]
+    data = sorted(input[1:-1])
+    print(fst_line)
+    print(data)
