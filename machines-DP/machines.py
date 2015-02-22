@@ -1,32 +1,16 @@
 #!/usr/bin/python3.4
 import re
+from itertools import takewhile
 
-input = [(1, 9, 1, 2),
-  (2, 10, 9, 1),
-  (3, 2, 1, 2),
-  (4, 11, 7, 4),
-  (5, 0, 0, 0),
-  (6, 12, 1, 3),
-  (7, 0, 0, 0),
-  (8, 20, 5, 4),
-  (9, 0, 0, 0),
-  (10, 0, 0, 0),
-  (11, 0, 0, 0),
-  (12, 0, 0, 0),
-  (13, 0, 0, 0),
-  (14, 0, 0, 0),
-  (15, 0, 0, 0),
-  (16, 0, 0, 0),
-  (17, 0, 0, 0),
-  (18, 0, 0, 0),
-  (19, 0, 0, 0),
-  (20, 0, 0, 0)]
-
+""" author: KINYOCK Valérian 
+"""
 memoization = {}
-max_day = len(input)
-
 
 def maxProfit(dollars, day, hold):
+    """ Function using dynamic programming 
+    States: selling, buying, selling & buying,skipping (getting profit of the machine), or doing nothing 
+    """
+
     # all actions
     sell_buy, sell, buy, skip, nothing = 0, 0, 0, 0, 0
     
@@ -39,17 +23,21 @@ def maxProfit(dollars, day, hold):
         if hold != -1: 
             return dollars + input[hold][2]
         return dollars
-
+    
+    # action of buying a machine
     if dollars >= input[day][1] and hold == -1:
         buy = maxProfit(dollars - input[day][1], day + 1, day)
     
+    # action of doing nothing (if holding no machine)
     if hold == -1:
         nothing = maxProfit(dollars, day + 1, hold)
     
+    # if we hold a machine, we can sell, sell&buy or only get the profit of the day (skip)
     elif hold != -1:
         sell = maxProfit(dollars + input[hold][2], day + 1, -1)
         skip = maxProfit(dollars + input[hold][3], day + 1, hold)
         
+        # we can sell&buy only if we have enough money to buy the machine at the current day
         if dollars + input[hold][2] >= input[day][1]:
             sell_buy = maxProfit(dollars + input[hold][2] - input[day][1], day + 1, day)
 
@@ -59,28 +47,39 @@ def maxProfit(dollars, day, hold):
     return tmp_dollars
 
 def extract_data(filename):
-    data = []
-    with open(filename, "r") as f:
-        for line in f:
-            data.append(tuple(int(v) for v in re.findall("[0-9]+" , line)))            
-    f.close()
-    
-    fst_line = data[0]
-    data = sorted(data[1:-1])
-    data_dict = {d[0]: (d[0], d[1], d[2], d[3]) for d in data }
-    
-    data = []
-    for d in range(1, fst_line[2]+1):
-        if d in data_dict:
-            data.append(data_dict[d])
-        else:
-            data.append((d, 0, 0, 0))
+    """ Extract and analyze data from file """
 
-    return fst_line, data
+    data_lst = []
+    with open(filename) as f:
+        for line in f:
+            data_lst.append(tuple(int(v) for v in re.findall("[0-9]+", line)))
+    
+    data = {}
+
+    for i, val in enumerate(data_lst):
+        if val == (0, 0, 0): break
+        if len(val) == 3:
+            print(val)        
+            data[val] = (list(takewhile(lambda x: len(x) > 3, data_lst[i+1:])))
+            data_dict = { d[0]: (d[0], d[1], d[2], d[3]) for d in data[val] }
+            data[val] = []
+
+            for x in range(1, val[2] + 1):
+                if x in data_dict: data[val].append(data_dict[x])
+                else: data[val].append((x, 0, 0, 0))    
+
+    return data
 
 if __name__ == "__main__":
-    print(maxProfit(10, 0, -1))
-    fst_line, data = extract_data("input2.txt")
+    extracted_data = extract_data("input.txt")
+    """print(fst_line, data)
+    max_day = fst_line[2]
+    input = data
+    print(maxProfit(fst_line[1], 0, -1))
+    
+    print("fst_line:", fst_line)
+    print("data:", data)"""
 
-    print(fst_line)
-    print(data)
+    for key, val in extracted_data.items():
+        print(key, val)
+    
